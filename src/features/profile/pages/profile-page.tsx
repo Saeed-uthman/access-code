@@ -17,11 +17,11 @@ const passwordSchema = z
   .object({
     old_password: z.string().min(1, 'Current password is required'),
     new_password: z.string().min(8, 'Password must be at least 8 characters'),
-    new_password_confirm: z.string(),
+    confirm_new_password: z.string(),
   })
-  .refine((data) => data.new_password === data.new_password_confirm, {
+  .refine((data) => data.new_password === data.confirm_new_password, {
     message: 'Passwords do not match',
-    path: ['new_password_confirm'],
+    path: ['confirm_new_password'],
   });
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
@@ -58,7 +58,7 @@ export default function ProfilePage() {
     defaultValues: {
       old_password: '',
       new_password: '',
-      new_password_confirm: '',
+      confirm_new_password: '',
     },
   });
 
@@ -206,8 +206,8 @@ export default function ProfilePage() {
                 <Input
                   type="password"
                   placeholder="Repeat new password"
-                  error={passwordErrors.new_password_confirm?.message}
-                  {...registerPassword('new_password_confirm')}
+                  error={passwordErrors.confirm_new_password?.message}
+                  {...registerPassword('confirm_new_password')}
                 />
               </div>
 

@@ -94,9 +94,9 @@ export function UserTable() {
       ),
     },
     {
-      key: 'date_joined',
+      key: 'created_at',
       header: 'Joined',
-      render: (user) => formatDateTime(user.date_joined),
+      render: (user) => formatDateTime(user.created_at),
     },
     {
       key: 'id',

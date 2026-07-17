@@ -1,5 +1,5 @@
 # YAROTECH WiFi Access System
-
+Continue  opencode -s ses_0902d6730ffeuR3Ud75Yu4QsTG
 Full-stack WiFi voucher selling platform with Paystack payment integration.
 
 ## Project Structure

@@ -17,8 +17,9 @@ export interface User {
   role: UserRole;
   is_email_verified: boolean;
   is_blocked: boolean;
-  date_joined: string;
-  last_login: string | null;
+  created_at: string;
+  profile?: UserProfile | null;
+  is_admin?: boolean;
 }
 
 export interface UserProfile {

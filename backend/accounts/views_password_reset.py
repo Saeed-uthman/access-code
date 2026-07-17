@@ -25,7 +25,7 @@ class PasswordResetRequestView(APIView):
             return Response({'error': 'User with this email does not exist.'}, status=404)
         token = default_token_generator.make_token(user)
         uid = urlsafe_base64_encode(force_bytes(user.pk))
-        reset_url = f"{settings.FRONTEND_URL}/reset-password/confirm/{uid}/{token}"
+        reset_url = f"{settings.FRONTEND_URL}/password-reset/confirm?uid={uid}&token={token}"
         send_mail(
             'Password Reset Request',
             f'Click the link to reset your password: {reset_url}',

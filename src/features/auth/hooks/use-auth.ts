@@ -11,6 +11,7 @@ import type {
   ChangePasswordRequest,
   UpdateProfileRequest,
 } from '../types';
+import type { User } from '@/types/models';
 
 export function useLogin() {
   const navigate = useNavigate();
@@ -34,9 +35,9 @@ export function useRegister() {
 
   return useMutation({
     mutationFn: (data: RegisterRequest) => authService.register(data),
-    onSuccess: (_data, variables) => {
+    onSuccess: (data, variables) => {
       toast.success('Registration successful! Please verify your email.');
-      navigate('/verify-otp', { state: { email: variables.email } });
+      navigate('/verify-otp', { state: { email: variables.email, user_id: data.user_id } });
     },
     onError: (error: Error) => {
       toast.error(error.message || 'Registration failed');
@@ -51,7 +52,18 @@ export function useVerifyOtp() {
   return useMutation({
     mutationFn: (data: VerifyOtpRequest) => authService.verifyOtp(data),
     onSuccess: (data) => {
-      storeLogin(data.user, { access: data.access, refresh: data.refresh });
+      const user: User = {
+        id: data.data.user.id,
+        email: data.data.user.email,
+        username: data.data.user.username,
+        full_name: '',
+        phone_number: null,
+        role: 'user',
+        is_email_verified: true,
+        is_blocked: false,
+        created_at: new Date().toISOString(),
+      };
+      storeLogin(user, { access: data.data.token, refresh: data.data.refresh });
       toast.success('Email verified successfully!');
       navigate('/dashboard');
     },
@@ -63,7 +75,8 @@ export function useVerifyOtp() {
 
 export function useResendOtp() {
   return useMutation({
-    mutationFn: (email: string) => authService.resendOtp(email),
+    mutationFn: (data: { user_id: string; otp_type: 'email' }) =>
+      authService.resendOtp(data),
     onSuccess: () => {
       toast.success('OTP resent successfully!');
     },
@@ -76,10 +89,10 @@ export function useResendOtp() {
 export function useLogout() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-  const { logout: storeLogout } = useAuthStore();
+  const { logout: storeLogout, tokens } = useAuthStore();
 
   return useMutation({
-    mutationFn: () => authService.logout(),
+    mutationFn: () => authService.logout(tokens?.refresh || ''),
     onSettled: () => {
       storeLogout();
       queryClient.clear();
@@ -100,11 +113,17 @@ export function useProfile() {
 
 export function useUpdateProfile() {
   const queryClient = useQueryClient();
+  const { setUser, user } = useAuthStore();
 
   return useMutation({
     mutationFn: (data: UpdateProfileRequest) => authService.updateProfile(data),
-    onSuccess: (data) => {
-      queryClient.setQueryData(['auth', 'profile'], data);
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['auth', 'profile'] });
+      if (user) {
+        authService.getProfile().then((freshUser) => {
+          setUser(freshUser);
+        });
+      }
       toast.success('Profile updated successfully!');
     },
     onError: (error: Error) => {

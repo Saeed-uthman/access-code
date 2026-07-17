@@ -9,9 +9,14 @@ export interface RegisterRequest {
   email: string;
   username: string;
   full_name: string;
+  phone_number: string;
   password: string;
-  password_confirm: string;
-  phone_number?: string;
+  confirm_password: string;
+}
+
+export interface RegisterResponse {
+  message: string;
+  user_id: string;
 }
 
 export interface AuthResponse {
@@ -21,12 +26,23 @@ export interface AuthResponse {
 }
 
 export interface VerifyOtpRequest {
-  email: string;
-  otp: string;
+  user_id: string;
+  otp_code: string;
+  otp_type: 'email';
+}
+
+export interface VerifyOtpResponse {
+  message: string;
+  data: {
+    user: { id: string; email: string; username: string };
+    token: string;
+    refresh: string;
+  };
 }
 
 export interface ResendOtpRequest {
-  email: string;
+  user_id: string;
+  otp_type: 'email';
 }
 
 export interface PasswordResetRequest {
@@ -37,16 +53,15 @@ export interface PasswordResetConfirmRequest {
   uid: string;
   token: string;
   new_password: string;
-  new_password_confirm: string;
 }
 
 export interface ChangePasswordRequest {
   old_password: string;
   new_password: string;
-  new_password_confirm: string;
+  confirm_new_password: string;
 }
 
 export interface UpdateProfileRequest {
-  full_name?: string;
-  phone_number?: string;
+  address?: string;
+  date_of_birth?: string;
 }

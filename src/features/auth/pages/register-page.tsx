@@ -10,14 +10,14 @@ const registerSchema = z
   .object({
     full_name: z.string().min(2, 'Full name must be at least 2 characters'),
     email: z.string().email('Please enter a valid email address'),
-    phone_number: z.string().optional(),
+    phone_number: z.string().min(1, 'Phone number is required'),
     username: z.string().min(3, 'Username must be at least 3 characters'),
     password: z.string().min(8, 'Password must be at least 8 characters'),
-    password_confirm: z.string(),
+    confirm_password: z.string(),
   })
-  .refine((data) => data.password === data.password_confirm, {
+  .refine((data) => data.password === data.confirm_password, {
     message: 'Passwords do not match',
-    path: ['password_confirm'],
+    path: ['confirm_password'],
   });
 
 type RegisterFormValues = z.infer<typeof registerSchema>;
@@ -37,7 +37,7 @@ export default function RegisterPage() {
       phone_number: '',
       username: '',
       password: '',
-      password_confirm: '',
+      confirm_password: '',
     },
   });
 
@@ -123,16 +123,16 @@ export default function RegisterPage() {
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="password_confirm" className="text-sm font-medium text-gray-700">
+              <label htmlFor="confirm_password" className="text-sm font-medium text-gray-700">
                 Confirm Password
               </label>
               <Input
-                id="password_confirm"
+                id="confirm_password"
                 type="password"
                 placeholder="Repeat your password"
                 icon={<Lock className="h-4 w-4" />}
-                error={errors.password_confirm?.message}
-                {...register('password_confirm')}
+                error={errors.confirm_password?.message}
+                {...register('confirm_password')}
               />
             </div>
 

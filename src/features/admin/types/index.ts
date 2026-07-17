@@ -8,11 +8,6 @@ export interface AdminUserListParams extends PaginationParams {
 }
 
 export interface UserDetail extends User {
-  profile?: {
-    id: string;
-    address: string | null;
-    date_of_birth: string | null;
-  };
   total_transactions: number;
   total_spent: number;
   active_codes: number;

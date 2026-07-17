@@ -8,7 +8,7 @@ import { Button, Input, Card, CardHeader, CardTitle, CardDescription, CardConten
 import { useVerifyOtp, useResendOtp } from '../hooks/use-auth';
 
 const otpSchema = z.object({
-  otp: z
+  otp_code: z
     .string()
     .length(6, 'OTP must be exactly 6 digits')
     .regex(/^\d+$/, 'OTP must contain only numbers'),
@@ -18,7 +18,9 @@ type OtpFormValues = z.infer<typeof otpSchema>;
 
 export default function VerifyOtpPage() {
   const location = useLocation();
-  const email = (location.state as { email?: string })?.email || '';
+  const state = location.state as { email?: string; user_id?: string } | null;
+  const email = state?.email || '';
+  const userId = state?.user_id || '';
 
   const [countdown, setCountdown] = useState(60);
   const [canResend, setCanResend] = useState(false);
@@ -32,7 +34,7 @@ export default function VerifyOtpPage() {
     formState: { errors },
   } = useForm<OtpFormValues>({
     resolver: zodResolver(otpSchema),
-    defaultValues: { otp: '' },
+    defaultValues: { otp_code: '' },
   });
 
   useEffect(() => {
@@ -45,14 +47,18 @@ export default function VerifyOtpPage() {
   }, [countdown]);
 
   const handleResend = useCallback(() => {
-    if (!email) return;
-    resendOtpMutation.mutate(email);
+    if (!userId) return;
+    resendOtpMutation.mutate({ user_id: userId, otp_type: 'email' });
     setCountdown(60);
     setCanResend(false);
-  }, [email, resendOtpMutation]);
+  }, [userId, resendOtpMutation]);
 
   const onSubmit = (data: OtpFormValues) => {
-    verifyOtpMutation.mutate({ email, otp: data.otp });
+    verifyOtpMutation.mutate({
+      user_id: userId,
+      otp_code: data.otp_code,
+      otp_type: 'email',
+    });
   };
 
   return (
@@ -72,16 +78,16 @@ export default function VerifyOtpPage() {
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-2">
-              <label htmlFor="otp" className="text-sm font-medium text-gray-700">
+              <label htmlFor="otp_code" className="text-sm font-medium text-gray-700">
                 Verification Code
               </label>
               <Input
-                id="otp"
+                id="otp_code"
                 placeholder="000000"
                 maxLength={6}
                 className="text-center text-lg tracking-[0.5em]"
-                error={errors.otp?.message}
-                {...register('otp')}
+                error={errors.otp_code?.message}
+                {...register('otp_code')}
               />
             </div>
 

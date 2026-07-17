@@ -6,15 +6,9 @@ import { Lock } from 'lucide-react';
 import { Button, Input, Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/shared/components';
 import { useConfirmPasswordReset } from '../hooks/use-auth';
 
-const schema = z
-  .object({
-    new_password: z.string().min(8, 'Password must be at least 8 characters'),
-    new_password_confirm: z.string(),
-  })
-  .refine((data) => data.new_password === data.new_password_confirm, {
-    message: 'Passwords do not match',
-    path: ['new_password_confirm'],
-  });
+const schema = z.object({
+  new_password: z.string().min(8, 'Password must be at least 8 characters'),
+});
 
 type FormValues = z.infer<typeof schema>;
 
@@ -32,7 +26,6 @@ export default function PasswordResetConfirmPage() {
     resolver: zodResolver(schema),
     defaultValues: {
       new_password: '',
-      new_password_confirm: '',
     },
   });
 
@@ -41,7 +34,6 @@ export default function PasswordResetConfirmPage() {
       uid,
       token,
       new_password: data.new_password,
-      new_password_confirm: data.new_password_confirm,
     });
   };
 
@@ -80,20 +72,6 @@ export default function PasswordResetConfirmPage() {
                 icon={<Lock className="h-4 w-4" />}
                 error={errors.new_password?.message}
                 {...register('new_password')}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label htmlFor="new_password_confirm" className="text-sm font-medium text-gray-700">
-                Confirm New Password
-              </label>
-              <Input
-                id="new_password_confirm"
-                type="password"
-                placeholder="Repeat your new password"
-                icon={<Lock className="h-4 w-4" />}
-                error={errors.new_password_confirm?.message}
-                {...register('new_password_confirm')}
               />
             </div>
 

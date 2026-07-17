@@ -3,7 +3,10 @@ import type {
   AuthResponse,
   LoginRequest,
   RegisterRequest,
+  RegisterResponse,
   VerifyOtpRequest,
+  VerifyOtpResponse,
+  ResendOtpRequest,
   PasswordResetRequest,
   PasswordResetConfirmRequest,
   ChangePasswordRequest,
@@ -13,42 +16,42 @@ import type { User } from '@/types/models';
 
 export const authService = {
   login(data: LoginRequest): Promise<AuthResponse> {
-    return post<AuthResponse>('/api/v1/auth/login/', data);
+    return post<AuthResponse>('/auth/login/', data);
   },
 
-  register(data: RegisterRequest): Promise<{ message: string; email: string }> {
-    return post('/api/v1/auth/register/', data);
+  register(data: RegisterRequest): Promise<RegisterResponse> {
+    return post<RegisterResponse>('/auth/register/', data);
   },
 
-  verifyOtp(data: VerifyOtpRequest): Promise<AuthResponse> {
-    return post<AuthResponse>('/api/v1/auth/verify-otp/', data);
+  verifyOtp(data: VerifyOtpRequest): Promise<VerifyOtpResponse> {
+    return post<VerifyOtpResponse>('/auth/verify-otp/', data);
   },
 
-  resendOtp(email: string): Promise<{ message: string }> {
-    return post('/api/v1/auth/resend-otp/', { email });
+  resendOtp(data: ResendOtpRequest): Promise<{ message: string }> {
+    return post('/auth/resend-otp/', data);
   },
 
-  logout(): Promise<void> {
-    return post('/api/v1/auth/logout/', {});
+  logout(refreshToken: string): Promise<{ message: string }> {
+    return post('/auth/logout/', { refresh_token: refreshToken });
   },
 
   requestPasswordReset(data: PasswordResetRequest): Promise<{ message: string }> {
-    return post('/api/v1/auth/password-reset/', data);
+    return post('/auth/password-reset/', data);
   },
 
   confirmPasswordReset(data: PasswordResetConfirmRequest): Promise<{ message: string }> {
-    return post('/api/v1/auth/password-reset-confirm/', data);
+    return post('/auth/password-reset/confirm/', data);
   },
 
   getProfile(): Promise<User> {
-    return get<User>('/api/v1/auth/profile/');
+    return get<User>('/auth/profile/');
   },
 
   updateProfile(data: UpdateProfileRequest): Promise<User> {
-    return put<User>('/api/v1/auth/profile/', data);
+    return put<User>('/auth/profile/update/', data);
   },
 
   changePassword(data: ChangePasswordRequest): Promise<{ message: string }> {
-    return post('/api/v1/auth/change-password/', data);
+    return post('/auth/change-password/', data);
   },
 };
