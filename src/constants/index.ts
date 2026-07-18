@@ -67,11 +67,15 @@ export const ACCESS_CODE_STATUSES = [
 ] as const;
 
 export const NOTIFICATION_TYPES = [
-  { value: 'system', label: 'System' },
-  { value: 'transaction', label: 'Transaction' },
-  { value: 'access_code', label: 'Access Code' },
-  { value: 'account', label: 'Account' },
-  { value: 'promotion', label: 'Promotion' },
+  { value: 'payment_success', label: 'Payment Success' },
+  { value: 'payment_failed', label: 'Payment Failed' },
+  { value: 'payment_reminder', label: 'Payment Reminder' },
+  { value: 'codes_assigned', label: 'Codes Assigned' },
+  { value: 'expiry_warning', label: 'Expiry Warning' },
+  { value: 'low_stock', label: 'Low Stock' },
+  { value: 'system_announcement', label: 'System Announcement' },
+  { value: 'account_update', label: 'Account Update' },
+  { value: 'general', label: 'General' },
 ] as const;
 
 export const USER_ROLES = [

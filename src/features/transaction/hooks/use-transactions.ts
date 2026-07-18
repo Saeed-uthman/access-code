@@ -4,7 +4,7 @@ import type { TransactionListParams } from '../types';
 
 export function useUserTransactions(params?: TransactionListParams) {
   return useQuery({
-    queryKey: ['transactions', params],
+    queryKey: ['transactions', 'user', params],
     queryFn: () => transactionService.getUserTransactions(params),
   });
 }
@@ -19,14 +19,14 @@ export function useTransaction(id: string) {
 
 export function useAdminTransactions(params?: TransactionListParams) {
   return useQuery({
-    queryKey: ['admin', 'transactions', params],
+    queryKey: ['transactions', 'admin', params],
     queryFn: () => transactionService.getAdminTransactions(params),
   });
 }
 
 export function useTransactionStats() {
   return useQuery({
-    queryKey: ['admin', 'transactions', 'stats'],
+    queryKey: ['transactions', 'stats'],
     queryFn: () => transactionService.getTransactionStats(),
   });
 }

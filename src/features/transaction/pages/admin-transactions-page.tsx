@@ -41,9 +41,9 @@ export default function AdminTransactionsPage() {
       {stats && (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <StatCard icon={DollarSign} label="Total Revenue" value={formatCurrency(stats.total_revenue)} iconColor="text-green-600" />
-          <StatCard icon={CreditCard} label="Total Transactions" value={stats.total} iconColor="text-blue-600" />
-          <StatCard icon={Clock} label="Pending" value={stats.pending} iconColor="text-yellow-600" />
-          <StatCard icon={XCircle} label="Failed" value={stats.failed} iconColor="text-red-600" />
+          <StatCard icon={CreditCard} label="Total Transactions" value={stats.total_transactions} iconColor="text-blue-600" />
+          <StatCard icon={Clock} label="Pending" value={stats.pending_transactions} iconColor="text-yellow-600" />
+          <StatCard icon={XCircle} label="Failed" value={stats.failed_transactions} iconColor="text-red-600" />
         </div>
       )}
 

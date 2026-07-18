@@ -56,7 +56,7 @@ export function useSendBulkNotification() {
     mutationFn: (data: BulkNotificationRequest) => notificationService.sendBulkNotification(data),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['notifications'] });
-      toast.success(`Notification sent to ${data.sent_count} users!`);
+      toast.success(data.message || 'Notification sent successfully!');
     },
     onError: (error: Error) => {
       toast.error(error.message || 'Failed to send notification');

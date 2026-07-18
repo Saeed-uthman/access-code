@@ -13,8 +13,8 @@ const filterOptions: Array<{ value: PlanType | 'all'; label: string }> = [
 
 export default function PlansPage() {
   const [activeFilter, setActiveFilter] = useState<PlanType | 'all'>('all');
-  const params = activeFilter === 'all' ? {} : { plan_type: activeFilter };
-  const { data, isLoading } = usePlans({ is_active: true, ...params });
+  const params = activeFilter === 'all' ? {} : { type: activeFilter };
+  const { data, isLoading } = usePlans(params);
 
   if (isLoading) return <FullPageLoader />;
 

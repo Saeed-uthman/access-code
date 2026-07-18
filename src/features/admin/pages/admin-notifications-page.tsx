@@ -10,7 +10,11 @@ const bulkNotificationSchema = z.object({
   notification_type: z.string().min(1, 'Notification type is required'),
   title: z.string().min(1, 'Title is required'),
   message: z.string().min(1, 'Message is required'),
-  target_audience: z.enum(['all', 'verified', 'unverified', 'admin', 'specific'], {
+  target_audience: z.enum([
+    'all_users', 'admin_users', 'regular_users',
+    'house_plan_users', 'individual_plan_users', 'business_plan_users',
+    'verified_users', 'unverified_users',
+  ], {
     required_error: 'Target audience is required',
   }),
 });
@@ -18,10 +22,14 @@ const bulkNotificationSchema = z.object({
 type BulkNotificationFormValues = z.infer<typeof bulkNotificationSchema>;
 
 const audienceOptions = [
-  { value: 'all', label: 'All Users' },
-  { value: 'verified', label: 'Verified Users' },
-  { value: 'unverified', label: 'Unverified Users' },
-  { value: 'admin', label: 'Admins Only' },
+  { value: 'all_users', label: 'All Users' },
+  { value: 'verified_users', label: 'Verified Users' },
+  { value: 'unverified_users', label: 'Unverified Users' },
+  { value: 'admin_users', label: 'Admins Only' },
+  { value: 'regular_users', label: 'Regular Users' },
+  { value: 'house_plan_users', label: 'House Plan Users' },
+  { value: 'individual_plan_users', label: 'Individual Plan Users' },
+  { value: 'business_plan_users', label: 'Business Plan Users' },
 ];
 
 const notificationTypeOptions = NOTIFICATION_TYPES.map((t) => ({
@@ -40,8 +48,8 @@ export default function AdminNotificationsPage() {
   } = useForm<BulkNotificationFormValues>({
     resolver: zodResolver(bulkNotificationSchema),
     defaultValues: {
-      notification_type: 'system',
-      target_audience: 'all',
+      notification_type: 'system_announcement',
+      target_audience: 'all_users',
     },
   });
 

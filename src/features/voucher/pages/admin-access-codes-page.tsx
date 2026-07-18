@@ -25,7 +25,7 @@ export default function AdminAccessCodesPage() {
   const handleAssign = () => {
     if (!assignCodeId || !assignEmail) return;
     assignMutation.mutate(
-      { access_code_id: assignCodeId, user_email: assignEmail },
+      { code_id: assignCodeId, user_id: assignEmail },
       {
         onSuccess: () => {
           setShowAssignModal(false);
@@ -65,31 +65,31 @@ export default function AdminAccessCodesPage() {
           <Card>
             <CardContent className="p-4 text-center">
               <p className="text-sm text-gray-500">Total</p>
-              <p className="text-2xl font-bold">{stats.total}</p>
+              <p className="text-2xl font-bold">{stats.total_codes}</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
               <p className="text-sm text-gray-500">Available</p>
-              <p className="text-2xl font-bold text-green-600">{stats.available}</p>
+              <p className="text-2xl font-bold text-green-600">{stats.available_codes}</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
               <p className="text-sm text-gray-500">Assigned</p>
-              <p className="text-2xl font-bold text-blue-600">{stats.assigned}</p>
+              <p className="text-2xl font-bold text-blue-600">{stats.assigned_codes}</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
               <p className="text-sm text-gray-500">Used</p>
-              <p className="text-2xl font-bold text-purple-600">{stats.used}</p>
+              <p className="text-2xl font-bold text-purple-600">{stats.used_codes}</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
               <p className="text-sm text-gray-500">Expired</p>
-              <p className="text-2xl font-bold text-red-600">{stats.expired}</p>
+              <p className="text-2xl font-bold text-red-600">{stats.expired_codes}</p>
             </CardContent>
           </Card>
         </div>

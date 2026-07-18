@@ -1,38 +1,31 @@
 import type { Transaction } from '@/types/models';
 
 export interface PaymentInitRequest {
-  plan_id: string;
-  quantity: number;
-  callback_url?: string;
-}
-
-export interface PaymentInitResponse {
-  authorization_url: string;
-  access_code: string;
-  payment_reference: string;
   transaction_id: string;
 }
 
-export interface PaymentVerifyResponse {
-  status: string;
-  transaction: Transaction;
+export interface PaymentInitResponse {
   message: string;
+  payment_data: {
+    authorization_url: string;
+    access_code: string;
+    payment_reference: string;
+    transaction_id: string;
+  };
 }
 
-export interface TransactionCreateRequest {
-  plan_id: string;
-  quantity: number;
-  payment_reference: string;
-  gateway_reference: string;
-  amount: number;
-  total_amount: number;
+export interface PaymentVerifyResponse {
+  message: string;
+  transaction: Transaction;
+  success: boolean;
 }
 
 export interface PaymentSummary {
-  total_paid: number;
+  total_revenue: number;
   total_transactions: number;
-  successful_transactions: number;
+  completed_transactions: number;
   pending_transactions: number;
+  failed_transactions: number;
 }
 
 export type { Transaction };

@@ -5,7 +5,7 @@ export { VoucherCard } from './components/voucher-card';
 export { VoucherTable } from './components/voucher-table';
 export { BulkUploadModal } from './components/bulk-upload-modal';
 
-export { useMyCodes, useAdminCodes, useAccessCode, useBulkUpload, useAssignCode, useAccessCodeStats } from './hooks/use-vouchers';
+export { useMyCodes, useAdminCodes, useBulkUpload, useAssignCode, useAccessCodeStats } from './hooks/use-vouchers';
 
 export { voucherService } from './services/voucher.service';
 

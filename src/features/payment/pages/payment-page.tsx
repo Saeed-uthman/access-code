@@ -1,16 +1,16 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { FullPageLoader } from '@/shared/components';
 import { useInitializePayment, useVerifyPayment } from '../hooks/use-payment';
+import { useCreateTransaction } from '../hooks/use-payment';
 import { usePlan } from '@/features/plans/hooks/use-plans';
 import { PaymentModal } from '../components/payment-modal';
 import { Button, Input, Card, CardHeader, CardTitle, CardContent } from '@/shared/components';
 import { formatCurrency } from '@/utils/format';
 import { ArrowLeft, ShoppingCart } from 'lucide-react';
-import { useEffect } from 'react';
 
 const checkoutSchema = z.object({
   quantity: z.number().min(1, 'Quantity must be at least 1').max(100, 'Maximum 100 per order'),
@@ -33,6 +33,7 @@ export function PaymentPage() {
   } | null>(null);
 
   const { data: plan, isLoading: planLoading } = usePlan(planId);
+  const createTransactionMutation = useCreateTransaction();
   const initializePaymentMutation = useInitializePayment();
   const verifyPaymentMutation = useVerifyPayment();
 
@@ -74,23 +75,28 @@ export function PaymentPage() {
   const totalAmount = plan.cost * quantity;
 
   const onSubmit = (data: CheckoutFormValues) => {
-    const callbackUrl = `${window.location.origin}/checkout?reference=`;
-
-    initializePaymentMutation.mutate(
+    createTransactionMutation.mutate(
       {
-        plan_id: plan.id,
+        plan: plan.id,
         quantity: data.quantity,
-        callback_url: callbackUrl,
+        payment_method: 'paystack',
       },
       {
-        onSuccess: (response) => {
-          setPaymentData({
-            authorization_url: response.authorization_url,
-            amount: totalAmount,
-            planName: plan.name,
-            quantity: data.quantity,
-          });
-          setShowPaymentModal(true);
+        onSuccess: (transaction) => {
+          initializePaymentMutation.mutate(
+            { transaction_id: transaction.id },
+            {
+              onSuccess: (response) => {
+                setPaymentData({
+                  authorization_url: response.payment_data.authorization_url,
+                  amount: totalAmount,
+                  planName: plan.name,
+                  quantity: data.quantity,
+                });
+                setShowPaymentModal(true);
+              },
+            }
+          );
         },
       }
     );
@@ -163,9 +169,11 @@ export function PaymentPage() {
               <Button
                 type="submit"
                 className="w-full"
-                disabled={initializePaymentMutation.isPending}
+                disabled={createTransactionMutation.isPending || initializePaymentMutation.isPending}
               >
-                {initializePaymentMutation.isPending ? 'Processing...' : 'Proceed to Payment'}
+                {createTransactionMutation.isPending || initializePaymentMutation.isPending
+                  ? 'Processing...'
+                  : 'Proceed to Payment'}
               </Button>
             </form>
           </div>

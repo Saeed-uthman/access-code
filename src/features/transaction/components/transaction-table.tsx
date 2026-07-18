@@ -39,7 +39,11 @@ export function TransactionTable({ transactions, isLoading, isAdmin = false, bas
           {
             key: 'user',
             header: 'User',
-            render: (tx: Transaction) => tx.user || '-',
+            render: (tx: Transaction) => {
+              if (!tx.user) return '-';
+              if (typeof tx.user === 'string') return tx.user;
+              return tx.user.email || tx.user.full_name || '-';
+            },
           } as Column<Transaction>,
         ]
       : []),

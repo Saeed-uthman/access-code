@@ -1,4 +1,4 @@
-import { Bell, MessageSquare, CreditCard, Key, Info, Gift } from 'lucide-react';
+import { Bell, MessageSquare, CreditCard, Key, Info } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { formatDateTime } from '@/utils/format';
 import { useMarkRead } from '../hooks/use-notifications';
@@ -10,11 +10,15 @@ interface NotificationListProps {
 }
 
 const typeIcons: Record<string, typeof Bell> = {
-  system: Info,
-  transaction: CreditCard,
-  access_code: Key,
-  account: MessageSquare,
-  promotion: Gift,
+  payment_success: CreditCard,
+  payment_failed: CreditCard,
+  payment_reminder: CreditCard,
+  codes_assigned: Key,
+  expiry_warning: Key,
+  low_stock: Key,
+  system_announcement: Info,
+  account_update: MessageSquare,
+  general: Bell,
 };
 
 export function NotificationList({ notifications, onNotificationClick }: NotificationListProps) {

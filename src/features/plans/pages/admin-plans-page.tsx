@@ -135,8 +135,8 @@ export default function AdminPlansPage() {
           </Card>
           <Card>
             <CardContent className="p-4">
-              <p className="text-sm text-gray-500">Inactive</p>
-              <p className="text-2xl font-bold text-red-600">{stats.inactive_plans}</p>
+              <p className="text-sm text-gray-500">Total Revenue</p>
+              <p className="text-2xl font-bold text-blue-600">{formatCurrency(stats.total_revenue)}</p>
             </CardContent>
           </Card>
         </div>

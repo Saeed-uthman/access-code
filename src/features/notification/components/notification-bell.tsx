@@ -12,7 +12,7 @@ export function NotificationBell() {
   const { data: notifData } = useNotifications({ page_size: 5, is_read: false });
   const markAllReadMutation = useMarkAllRead();
 
-  const unreadCount = unreadData?.count || 0;
+  const unreadCount = unreadData?.unread_count || 0;
   const notifications = notifData?.results || [];
 
   useEffect(() => {

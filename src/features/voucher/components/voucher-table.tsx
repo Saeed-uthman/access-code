@@ -67,7 +67,11 @@ export function VoucherTable({ codes, isLoading, onSearch }: VoucherTableProps) 
     {
       key: 'assigned_to',
       header: 'Assigned To',
-      render: (item) => item.assigned_to || '-',
+      render: (item) => {
+        if (!item.assigned_to) return '-';
+        if (typeof item.assigned_to === 'string') return item.assigned_to;
+        return item.assigned_to.email || item.assigned_to.full_name || '-';
+      },
     },
     {
       key: 'expires_at',

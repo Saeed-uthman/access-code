@@ -3,25 +3,24 @@ import type {
   PaymentInitRequest,
   PaymentInitResponse,
   PaymentVerifyResponse,
-  TransactionCreateRequest,
-  Transaction,
-  PaymentSummary,
 } from '../types';
+import type { Transaction } from '@/types/models';
+import type { PaymentSummary } from '../types';
 
 export const paymentService = {
   initializePayment(data: PaymentInitRequest): Promise<PaymentInitResponse> {
-    return post<PaymentInitResponse>('/api/v1/payments/initialize/', data);
+    return post<PaymentInitResponse>('/transactions/initialize-payment/', data);
   },
 
   verifyPayment(reference: string): Promise<PaymentVerifyResponse> {
-    return get<PaymentVerifyResponse>(`/api/v1/payments/verify/${reference}/`);
+    return post<PaymentVerifyResponse>('/transactions/verify-payment/', { reference });
   },
 
-  createTransaction(data: TransactionCreateRequest): Promise<Transaction> {
-    return post<Transaction>('/api/v1/transactions/', data);
+  createTransaction(data: { plan: string; quantity?: number; payment_method: string; description?: string }): Promise<Transaction> {
+    return post<Transaction>('/transactions/create/', data);
   },
 
   getPaymentSummary(): Promise<PaymentSummary> {
-    return get<PaymentSummary>('/api/v1/payments/summary/');
+    return get<PaymentSummary>('/transactions/admin/stats/');
   },
 };

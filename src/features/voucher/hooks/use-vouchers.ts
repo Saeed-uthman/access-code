@@ -17,14 +17,6 @@ export function useAdminCodes(params?: AccessCodeListParams) {
   });
 }
 
-export function useAccessCode(id: string) {
-  return useQuery({
-    queryKey: ['codes', id],
-    queryFn: () => voucherService.getAccessCode(id),
-    enabled: !!id,
-  });
-}
-
 export function useBulkUpload() {
   const queryClient = useQueryClient();
 
@@ -33,7 +25,7 @@ export function useBulkUpload() {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'codes'] });
       queryClient.invalidateQueries({ queryKey: ['admin', 'codes', 'stats'] });
-      toast.success(`${data.created} codes uploaded successfully!`);
+      toast.success(data.message || 'Codes uploaded successfully!');
     },
     onError: (error: Error) => {
       toast.error(error.message || 'Failed to upload codes');
@@ -46,10 +38,10 @@ export function useAssignCode() {
 
   return useMutation({
     mutationFn: (data: AssignCodeRequest) => voucherService.assignCode(data),
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'codes'] });
       queryClient.invalidateQueries({ queryKey: ['admin', 'codes', 'stats'] });
-      toast.success('Code assigned successfully!');
+      toast.success(data.message || 'Code assigned successfully!');
     },
     onError: (error: Error) => {
       toast.error(error.message || 'Failed to assign code');

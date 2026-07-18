@@ -8,20 +8,21 @@ export interface AccessCodeListParams extends PaginationParams {
 }
 
 export interface BulkUploadRequest {
-  codes: string[];
+  codes: string;
+  plan_id: string;
 }
 
 export interface AccessCodeStats {
-  total: number;
-  available: number;
-  assigned: number;
-  used: number;
-  expired: number;
+  total_codes: number;
+  available_codes: number;
+  assigned_codes: number;
+  used_codes: number;
+  expired_codes: number;
 }
 
 export interface AssignCodeRequest {
-  access_code_id: string;
-  user_email: string;
+  code_id: string;
+  user_id: string;
 }
 
 export type { AccessCode };

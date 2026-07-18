@@ -10,33 +10,24 @@ interface ActivityLogTableProps {
 export function ActivityLogTable({ activities, isLoading }: ActivityLogTableProps) {
   const columns: Column<ActivityLog>[] = [
     {
-      key: 'action',
+      key: 'action_type',
       header: 'Action',
       render: (log) => (
-        <span className="font-medium capitalize">{log.action.replace('_', ' ')}</span>
+        <span className="font-medium capitalize">{log.action_type.replace('_', ' ')}</span>
       ),
     },
     {
-      key: 'resource_type',
-      header: 'Resource',
+      key: 'description',
+      header: 'Description',
       render: (log) => (
-        <span className="capitalize">{log.resource_type.replace('_', ' ')}</span>
-      ),
-    },
-    {
-      key: 'resource_id',
-      header: 'Resource ID',
-      render: (log) => (
-        <span className="font-mono text-xs text-gray-500">
-          {log.resource_id ? log.resource_id.slice(0, 8) : '-'}
-        </span>
+        <span className="text-sm text-gray-600">{log.description}</span>
       ),
     },
     {
       key: 'ip_address',
       header: 'IP Address',
       render: (log) => (
-        <span className="font-mono text-xs">{log.ip_address}</span>
+        <span className="font-mono text-xs">{log.ip_address || '-'}</span>
       ),
     },
     {

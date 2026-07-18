@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Modal, Button, Textarea } from '@/shared/components';
+import { Modal, Button, Textarea, Select } from '@/shared/components';
 import { useBulkUpload } from '../hooks/use-vouchers';
+import { useAdminPlans } from '@/features/plans/hooks/use-plans';
 import { Upload } from 'lucide-react';
 
 interface BulkUploadModalProps {
@@ -10,7 +11,12 @@ interface BulkUploadModalProps {
 
 export function BulkUploadModal({ isOpen, onClose }: BulkUploadModalProps) {
   const [codeText, setCodeText] = useState('');
+  const [selectedPlan, setSelectedPlan] = useState('');
   const bulkUploadMutation = useBulkUpload();
+  const { data: plansData } = useAdminPlans();
+
+  const plans = plansData?.results || [];
+  const planOptions = plans.map((p) => ({ value: p.id, label: `${p.name} (₦${p.cost})` }));
 
   const parseCodes = (text: string): string[] => {
     return text
@@ -22,24 +28,38 @@ export function BulkUploadModal({ isOpen, onClose }: BulkUploadModalProps) {
   const codes = parseCodes(codeText);
 
   const handleUpload = () => {
-    if (codes.length === 0) return;
+    if (codes.length === 0 || !selectedPlan) return;
 
-    bulkUploadMutation.mutate({ codes }, {
-      onSuccess: () => {
-        setCodeText('');
-        onClose();
-      },
-    });
+    bulkUploadMutation.mutate(
+      { codes: codes.join('\n'), plan_id: selectedPlan },
+      {
+        onSuccess: () => {
+          setCodeText('');
+          setSelectedPlan('');
+          onClose();
+        },
+      }
+    );
   };
 
   const handleClose = () => {
     setCodeText('');
+    setSelectedPlan('');
     onClose();
   };
 
   return (
     <Modal isOpen={isOpen} onClose={handleClose} title="Bulk Upload Access Codes">
       <div className="space-y-4">
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-gray-700">Plan</label>
+          <Select
+            options={[{ value: '', label: 'Select a plan...' }, ...planOptions]}
+            value={selectedPlan}
+            onChange={(e) => setSelectedPlan(e.target.value)}
+          />
+        </div>
+
         <div>
           <p className="text-sm text-gray-600 mb-2">
             Enter access codes below, one per line or separated by commas/semicolons.
@@ -64,7 +84,7 @@ export function BulkUploadModal({ isOpen, onClose }: BulkUploadModalProps) {
           </Button>
           <Button
             onClick={handleUpload}
-            disabled={codes.length === 0 || bulkUploadMutation.isPending}
+            disabled={codes.length === 0 || !selectedPlan || bulkUploadMutation.isPending}
           >
             <Upload className="h-4 w-4 mr-2" />
             {bulkUploadMutation.isPending ? 'Uploading...' : `Upload ${codes.length} Codes`}

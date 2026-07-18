@@ -8,7 +8,11 @@ import type { AccessCode } from '../types';
 
 interface VoucherCardProps {
   code: AccessCode;
-  planName?: string;
+}
+
+function getPlanName(plan: AccessCode['plan']): string {
+  if (typeof plan === 'string') return plan;
+  return plan.name || '-';
 }
 
 const statusConfig: Record<string, { variant: 'success' | 'warning' | 'destructive' | 'default'; label: string }> = {
@@ -18,7 +22,7 @@ const statusConfig: Record<string, { variant: 'success' | 'warning' | 'destructi
   expired: { variant: 'destructive', label: 'Expired' },
 };
 
-export function VoucherCard({ code, planName }: VoucherCardProps) {
+export function VoucherCard({ code }: VoucherCardProps) {
   const [copied, setCopied] = useState(false);
   const config = statusConfig[code.status] || statusConfig.available;
 
@@ -59,11 +63,9 @@ export function VoucherCard({ code, planName }: VoucherCardProps) {
       </div>
 
       <div className="mt-3 space-y-1">
-        {planName && (
-          <p className="text-sm text-gray-600">
-            <span className="font-medium">Plan:</span> {planName}
-          </p>
-        )}
+        <p className="text-sm text-gray-600">
+          <span className="font-medium">Plan:</span> {getPlanName(code.plan)}
+        </p>
         {code.expires_at && (
           <div className="flex items-center gap-1 text-xs text-gray-500">
             <Clock className="h-3 w-3" />

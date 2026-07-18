@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import { paymentService } from '../services/payment.service';
-import type { PaymentInitRequest, TransactionCreateRequest } from '../types';
+import type { PaymentInitRequest } from '../types';
 
 export function useInitializePayment() {
   return useMutation({
@@ -32,7 +32,8 @@ export function useCreateTransaction() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: TransactionCreateRequest) => paymentService.createTransaction(data),
+    mutationFn: (data: { plan: string; quantity?: number; payment_method: string; description?: string }) =>
+      paymentService.createTransaction(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
     },

@@ -15,7 +15,7 @@ class UserAdmin(BaseUserAdmin):
         ('Personal info', {'fields': ('full_name', 'username', 'phone_number')}),
         ('Permissions', {'fields': ('role', 'is_active', 'is_staff', 'is_superuser', 'is_blocked')}),
         ('Verification', {'fields': ('is_email_verified',)}),
-        ('Important dates', {'fields': ('last_login', 'created_at')}),
+        ('Important dates', {'fields': ('last_login',)}),
     )
 
     add_fieldsets = (
@@ -24,6 +24,8 @@ class UserAdmin(BaseUserAdmin):
             'fields': ('email', 'full_name', 'username', 'phone_number', 'password1', 'password2', 'role'),
         }),
     )
+
+    readonly_fields = ['created_at']
 
 
 @admin.register(UserProfile)

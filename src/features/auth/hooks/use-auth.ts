@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { authService } from '../services/auth.service';
 import { useAuthStore } from '@/store/auth-store';
+import { extractApiError } from '@/lib/extract-api-error';
 import type {
   LoginRequest,
   RegisterRequest,
@@ -13,6 +14,11 @@ import type {
 } from '../types';
 import type { User } from '@/types/models';
 
+function getDashboardPath(user: User): string {
+  if (user.role === 'admin' || user.role === 'superadmin') return '/admin';
+  return '/dashboard';
+}
+
 export function useLogin() {
   const navigate = useNavigate();
   const { login: storeLogin } = useAuthStore();
@@ -22,10 +28,11 @@ export function useLogin() {
     onSuccess: (data) => {
       storeLogin(data.user, { access: data.access, refresh: data.refresh });
       toast.success('Login successful!');
-      navigate('/dashboard');
+      navigate(getDashboardPath(data.user), { replace: true });
     },
     onError: (error: Error) => {
-      toast.error(error.message || 'Login failed');
+      const msg = extractApiError(error);
+      toast.error(msg);
     },
   });
 }
@@ -37,10 +44,14 @@ export function useRegister() {
     mutationFn: (data: RegisterRequest) => authService.register(data),
     onSuccess: (data, variables) => {
       toast.success('Registration successful! Please verify your email.');
-      navigate('/verify-otp', { state: { email: variables.email, user_id: data.user_id } });
+      navigate('/verify-otp', {
+        state: { email: variables.email, user_id: data.user_id },
+        replace: true,
+      });
     },
     onError: (error: Error) => {
-      toast.error(error.message || 'Registration failed');
+      const msg = extractApiError(error);
+      toast.error(msg);
     },
   });
 }
@@ -52,23 +63,25 @@ export function useVerifyOtp() {
   return useMutation({
     mutationFn: (data: VerifyOtpRequest) => authService.verifyOtp(data),
     onSuccess: (data) => {
+      const backendUser = data.data.user;
       const user: User = {
-        id: data.data.user.id,
-        email: data.data.user.email,
-        username: data.data.user.username,
-        full_name: '',
-        phone_number: null,
-        role: 'user',
+        id: backendUser.id,
+        email: backendUser.email,
+        username: backendUser.username,
+        full_name: backendUser.full_name || '',
+        phone_number: backendUser.phone_number || null,
+        role: (backendUser.role as User['role']) || 'user',
         is_email_verified: true,
         is_blocked: false,
-        created_at: new Date().toISOString(),
+        created_at: backendUser.created_at || new Date().toISOString(),
       };
       storeLogin(user, { access: data.data.token, refresh: data.data.refresh });
       toast.success('Email verified successfully!');
-      navigate('/dashboard');
+      navigate(getDashboardPath(user), { replace: true });
     },
     onError: (error: Error) => {
-      toast.error(error.message || 'OTP verification failed');
+      const msg = extractApiError(error);
+      toast.error(msg);
     },
   });
 }
@@ -77,11 +90,12 @@ export function useResendOtp() {
   return useMutation({
     mutationFn: (data: { user_id: string; otp_type: 'email' }) =>
       authService.resendOtp(data),
-    onSuccess: () => {
-      toast.success('OTP resent successfully!');
+    onSuccess: (data) => {
+      toast.success(data.message || 'OTP resent successfully! Check your email.');
     },
     onError: (error: Error) => {
-      toast.error(error.message || 'Failed to resend OTP');
+      const msg = extractApiError(error);
+      toast.error(msg);
     },
   });
 }
@@ -96,7 +110,7 @@ export function useLogout() {
     onSettled: () => {
       storeLogout();
       queryClient.clear();
-      navigate('/login');
+      navigate('/login', { replace: true });
     },
   });
 }
@@ -127,7 +141,8 @@ export function useUpdateProfile() {
       toast.success('Profile updated successfully!');
     },
     onError: (error: Error) => {
-      toast.error(error.message || 'Failed to update profile');
+      const msg = extractApiError(error);
+      toast.error(msg);
     },
   });
 }
@@ -139,7 +154,8 @@ export function useChangePassword() {
       toast.success('Password changed successfully!');
     },
     onError: (error: Error) => {
-      toast.error(error.message || 'Failed to change password');
+      const msg = extractApiError(error);
+      toast.error(msg);
     },
   });
 }
@@ -148,11 +164,12 @@ export function useRequestPasswordReset() {
   return useMutation({
     mutationFn: (email: string) =>
       authService.requestPasswordReset({ email }),
-    onSuccess: () => {
-      toast.success('Password reset email sent!');
+    onSuccess: (data) => {
+      toast.success(data.message || 'Password reset email sent!');
     },
     onError: (error: Error) => {
-      toast.error(error.message || 'Failed to send reset email');
+      const msg = extractApiError(error);
+      toast.error(msg);
     },
   });
 }
@@ -163,12 +180,13 @@ export function useConfirmPasswordReset() {
   return useMutation({
     mutationFn: (data: PasswordResetConfirmRequest) =>
       authService.confirmPasswordReset(data),
-    onSuccess: () => {
-      toast.success('Password reset successful!');
-      navigate('/login');
+    onSuccess: (data) => {
+      toast.success(data.message || 'Password reset successful!');
+      navigate('/login', { replace: true });
     },
     onError: (error: Error) => {
-      toast.error(error.message || 'Password reset failed');
+      const msg = extractApiError(error);
+      toast.error(msg);
     },
   });
 }

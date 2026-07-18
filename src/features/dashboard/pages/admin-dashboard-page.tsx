@@ -12,6 +12,11 @@ export default function AdminDashboardPage() {
 
   if (statsLoading) return <FullPageLoader />;
 
+  const revenueData = (analytics?.daily_transactions || []).map((d) => ({
+    month: d.day,
+    revenue: d.revenue,
+  }));
+
   return (
     <div className="space-y-6">
       <div>
@@ -23,25 +28,25 @@ export default function AdminDashboardPage() {
         <StatCard
           icon={Users}
           label="Total Users"
-          value={formatNumber(stats?.total_users || 0)}
+          value={formatNumber(stats?.users_stats.total_users || 0)}
           iconColor="text-blue-600"
         />
         <StatCard
           icon={Key}
           label="Total Codes"
-          value={formatNumber(stats?.total_codes || 0)}
+          value={formatNumber(stats?.access_codes_stats.total_codes || 0)}
           iconColor="text-green-600"
         />
         <StatCard
           icon={CreditCard}
           label="Transactions"
-          value={formatNumber(stats?.total_transactions || 0)}
+          value={formatNumber(stats?.transactions_stats.total_transactions || 0)}
           iconColor="text-purple-600"
         />
         <StatCard
           icon={DollarSign}
           label="Total Revenue"
-          value={formatCurrency(stats?.total_revenue || 0)}
+          value={formatCurrency(stats?.transactions_stats.total_revenue || 0)}
           iconColor="text-yellow-600"
         />
       </div>
@@ -49,50 +54,50 @@ export default function AdminDashboardPage() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardContent className="p-4">
-            <p className="text-sm text-gray-500">Active Users</p>
-            <p className="text-xl font-bold text-green-600">{stats?.active_users || 0}</p>
+            <p className="text-sm text-gray-500">Admin Users</p>
+            <p className="text-xl font-bold text-blue-600">{stats?.users_stats.admin_users || 0}</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4">
             <p className="text-sm text-gray-500">Blocked Users</p>
-            <p className="text-xl font-bold text-red-600">{stats?.blocked_users || 0}</p>
+            <p className="text-xl font-bold text-red-600">{stats?.users_stats.blocked_users || 0}</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4">
-            <p className="text-sm text-gray-500">Monthly Revenue</p>
-            <p className="text-xl font-bold">{formatCurrency(stats?.monthly_revenue || 0)}</p>
+            <p className="text-sm text-gray-500">Active Plans</p>
+            <p className="text-xl font-bold text-green-600">{stats?.plans_stats.active_plans || 0}</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4">
-            <p className="text-sm text-gray-500">Pending Transactions</p>
-            <p className="text-xl font-bold text-yellow-600">{stats?.pending_transactions || 0}</p>
+            <p className="text-sm text-gray-500">Available Codes</p>
+            <p className="text-xl font-bold text-yellow-600">{stats?.access_codes_stats.available_codes || 0}</p>
           </CardContent>
         </Card>
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <RevenueChart
-          data={analytics?.monthly || []}
-          title="Monthly Revenue"
+          data={revenueData}
+          title="Revenue (Last 30 Days)"
         />
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Plan Distribution</CardTitle>
+            <CardTitle className="text-lg">Top Plans</CardTitle>
           </CardHeader>
           <CardContent>
-            {analytics?.plan_distribution && analytics.plan_distribution.length > 0 ? (
+            {analytics?.top_plans && analytics.top_plans.length > 0 ? (
               <div className="space-y-3">
-                {analytics.plan_distribution.map((item) => (
-                  <div key={item.plan_type} className="flex items-center justify-between">
+                {analytics.top_plans.map((item) => (
+                  <div key={item.id} className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <Badge variant="outline" className="capitalize">{item.plan_type}</Badge>
-                      <span className="text-sm text-gray-600">{item.count} codes</span>
+                      <span className="text-sm text-gray-600">{item.name} ({item.transaction_count} sales)</span>
                     </div>
-                    <span className="text-sm font-medium">{formatCurrency(item.revenue)}</span>
+                    <span className="text-sm font-medium">{formatCurrency(item.cost)}</span>
                   </div>
                 ))}
               </div>
@@ -103,7 +108,7 @@ export default function AdminDashboardPage() {
         </Card>
       </div>
 
-      {health && (
+      {health && health.length > 0 && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-lg">
@@ -112,27 +117,16 @@ export default function AdminDashboardPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-              <div>
-                <p className="text-sm text-gray-500">Status</p>
-                <Badge variant={health.status === 'healthy' ? 'success' : 'destructive'}>
-                  {health.status}
-                </Badge>
-              </div>
-              <div>
-                <p className="text-sm text-gray-500">Uptime</p>
-                <p className="font-medium">{health.uptime}</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-500">Version</p>
-                <p className="font-medium">{health.version}</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-500">Database</p>
-                <Badge variant={health.database === 'connected' ? 'success' : 'destructive'}>
-                  {health.database}
-                </Badge>
-              </div>
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+              {health.map((check) => (
+                <div key={check.component}>
+                  <p className="text-sm text-gray-500">{check.component}</p>
+                  <Badge variant={check.status === 'healthy' ? 'success' : 'destructive'}>
+                    {check.status}
+                  </Badge>
+                  <p className="mt-1 text-xs text-gray-400">{check.message}</p>
+                </div>
+              ))}
             </div>
           </CardContent>
         </Card>

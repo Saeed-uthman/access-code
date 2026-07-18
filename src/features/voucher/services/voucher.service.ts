@@ -10,26 +10,22 @@ import type {
 
 export const voucherService = {
   getMyCodes(): Promise<PaginatedResponse<AccessCode>> {
-    return get<PaginatedResponse<AccessCode>>('/api/v1/codes/my-codes/');
+    return get<PaginatedResponse<AccessCode>>('/access-codes/my-codes/');
   },
 
   getAdminCodes(params?: AccessCodeListParams): Promise<PaginatedResponse<AccessCode>> {
-    return get<PaginatedResponse<AccessCode>>('/api/v1/admin/codes/', { params });
+    return get<PaginatedResponse<AccessCode>>('/access-codes/admin/', { params });
   },
 
-  getAccessCode(id: string): Promise<AccessCode> {
-    return get<AccessCode>(`/api/v1/codes/${id}/`);
+  bulkUpload(data: BulkUploadRequest): Promise<{ message: string }> {
+    return post('/access-codes/admin/bulk-upload/', data);
   },
 
-  bulkUpload(data: BulkUploadRequest): Promise<{ created: number; message: string }> {
-    return post('/api/v1/admin/codes/bulk-upload/', data);
-  },
-
-  assignCode(data: AssignCodeRequest): Promise<AccessCode> {
-    return post<AccessCode>('/api/v1/admin/codes/assign/', data);
+  assignCode(data: AssignCodeRequest): Promise<{ message: string }> {
+    return post('/access-codes/admin/assign/', data);
   },
 
   getAccessCodeStats(): Promise<AccessCodeStats> {
-    return get<AccessCodeStats>('/api/v1/admin/codes/stats/');
+    return get<AccessCodeStats>('/access-codes/admin/stats/');
   },
 };

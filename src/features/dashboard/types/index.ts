@@ -22,22 +22,44 @@ export interface UserDashboardStats {
   total_spent: number;
   active_codes: number;
   expired_codes: number;
-  recent_transactions: Transaction[];
 }
 
-export interface SystemHealth {
+export interface SystemHealthCheck {
+  component: string;
   status: string;
-  uptime: string;
-  version: string;
-  database: string;
-  cache: string;
+  message: string;
+}
+
+export interface DailyTransaction {
+  day: string;
+  count: number;
+  revenue: number;
+}
+
+export interface TopPlan {
+  id: string;
+  name: string;
+  plan_type: string;
+  cost: number;
+  transaction_count: number;
+}
+
+export interface PaymentMethodStat {
+  payment_method: string;
+  count: number;
+  revenue: number;
+}
+
+export interface UserRegistration {
+  day: string;
+  count: number;
 }
 
 export interface AnalyticsData {
-  daily: Array<{ date: string; revenue: number; transactions: number; users: number }>;
-  monthly: Array<{ month: string; revenue: number; transactions: number; users: number }>;
-  plan_distribution: Array<{ plan_type: string; count: number; revenue: number }>;
-  payment_method_distribution: Array<{ method: string; count: number; amount: number }>;
+  daily_transactions: DailyTransaction[];
+  top_plans: TopPlan[];
+  payment_methods: PaymentMethodStat[];
+  user_registrations: UserRegistration[];
 }
 
 export type { Transaction };

@@ -2,9 +2,7 @@ import type { Plan, PlanType, Validity } from '@/types/models';
 import type { PaginationParams } from '@/types/api';
 
 export interface PlanListParams extends PaginationParams {
-  plan_type?: PlanType;
-  is_active?: boolean;
-  search?: string;
+  type?: PlanType;
 }
 
 export interface PlanCreateRequest {
@@ -12,6 +10,8 @@ export interface PlanCreateRequest {
   plan_type: PlanType;
   cost: number;
   validity: Validity;
+  validity_days: number;
+  description?: string;
   is_active?: boolean;
 }
 
@@ -20,14 +20,15 @@ export interface PlanUpdateRequest {
   plan_type?: PlanType;
   cost?: number;
   validity?: Validity;
+  validity_days?: number;
+  description?: string;
   is_active?: boolean;
 }
 
 export interface PlanStats {
   total_plans: number;
   active_plans: number;
-  inactive_plans: number;
-  by_type: Array<{ plan_type: PlanType; count: number }>;
+  total_revenue: number;
 }
 
 export type { Plan };

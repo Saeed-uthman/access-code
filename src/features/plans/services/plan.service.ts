@@ -4,34 +4,38 @@ import type { Plan, PlanListParams, PlanCreateRequest, PlanUpdateRequest, PlanSt
 
 export const planService = {
   getPlans(params?: PlanListParams): Promise<PaginatedResponse<Plan>> {
-    return get<PaginatedResponse<Plan>>('/api/v1/plans/', { params });
+    return get<PaginatedResponse<Plan>>('/plans/', { params });
   },
 
   getPlan(id: string): Promise<Plan> {
-    return get<Plan>(`/api/v1/plans/${id}/`);
+    return get<Plan>(`/plans/${id}/`);
   },
 
-  getAdminPlans(): Promise<PaginatedResponse<Plan>> {
-    return get<PaginatedResponse<Plan>>('/api/v1/admin/plans/');
+  getAdminPlans(params?: { search?: string; type?: string }): Promise<PaginatedResponse<Plan>> {
+    return get<PaginatedResponse<Plan>>('/plans/admin/', { params });
   },
 
   createPlan(data: PlanCreateRequest): Promise<Plan> {
-    return post<Plan>('/api/v1/admin/plans/', data);
+    return post<Plan>('/plans/admin/', data);
+  },
+
+  getAdminPlan(id: string): Promise<Plan> {
+    return get<Plan>(`/plans/admin/${id}/`);
   },
 
   updatePlan(id: string, data: PlanUpdateRequest): Promise<Plan> {
-    return put<Plan>(`/api/v1/admin/plans/${id}/`, data);
+    return put<Plan>(`/plans/admin/${id}/`, data);
   },
 
   deletePlan(id: string): Promise<void> {
-    return del(`/api/v1/admin/plans/${id}/`);
+    return del(`/plans/admin/${id}/`);
   },
 
-  togglePlanStatus(id: string): Promise<Plan> {
-    return put<Plan>(`/api/v1/admin/plans/${id}/toggle-status/`);
+  togglePlanStatus(id: string): Promise<{ message: string; is_active: boolean }> {
+    return post(`/plans/admin/${id}/toggle-status/`);
   },
 
   getPlanStats(): Promise<PlanStats> {
-    return get<PlanStats>('/api/v1/admin/plans/stats/');
+    return get<PlanStats>('/plans/admin/stats/');
   },
 };

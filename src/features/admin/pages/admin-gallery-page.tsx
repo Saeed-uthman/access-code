@@ -1,12 +1,11 @@
 import { useState, useRef } from 'react';
 import { Images, Trash2, Upload } from 'lucide-react';
-import { Button, Card, CardContent, Input, FullPageLoader } from '@/shared/components';
+import { Button, Card, CardContent, FullPageLoader } from '@/shared/components';
 import { useGalleryPhotos, useUploadPhoto, useDeletePhoto } from '../hooks/use-admin';
 import { formatDate } from '@/utils/format';
 
 export default function AdminGalleryPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [caption, setCaption] = useState('');
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
@@ -27,14 +26,12 @@ export default function AdminGalleryPage() {
     if (!selectedFile) return;
 
     const formData = new FormData();
-    formData.append('image', selectedFile);
-    if (caption) formData.append('caption', caption);
+    formData.append('photo', selectedFile);
 
     uploadMutation.mutate(formData, {
       onSuccess: () => {
         setSelectedFile(null);
         setPreviewUrl(null);
-        setCaption('');
         if (fileInputRef.current) fileInputRef.current.value = '';
       },
     });
@@ -79,13 +76,6 @@ export default function AdminGalleryPage() {
                 {selectedFile ? selectedFile.name : 'Choose Image'}
               </Button>
             </div>
-            <div className="flex-1">
-              <Input
-                placeholder="Caption (optional)"
-                value={caption}
-                onChange={(e) => setCaption(e.target.value)}
-              />
-            </div>
             <Button
               onClick={handleUpload}
               disabled={!selectedFile || uploadMutation.isPending}
@@ -107,18 +97,15 @@ export default function AdminGalleryPage() {
           photos.map((photo) => (
             <Card key={photo.id} className="overflow-hidden">
               <img
-                src={photo.image}
-                alt={photo.caption || 'Gallery photo'}
+                src={photo.photo}
+                alt="Gallery photo"
                 className="h-48 w-full object-cover"
               />
               <CardContent className="p-4">
                 <div className="flex items-start justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-900">
-                      {photo.caption || 'No caption'}
-                    </p>
                     <p className="mt-1 text-xs text-gray-500">
-                      {formatDate(photo.created_at)} · Order: {photo.order}
+                      {formatDate(photo.date_uploaded)}
                     </p>
                   </div>
                   <button

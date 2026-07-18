@@ -4,18 +4,18 @@ import type { ProfileUpdateRequest, ProfileDetailsUpdateRequest, ChangePasswordR
 
 export const profileService = {
   getProfile(): Promise<User> {
-    return get<User>('/api/v1/auth/profile/');
+    return get<User>('/accounts/profile/');
   },
 
   updateProfile(data: ProfileUpdateRequest): Promise<User> {
-    return put<User>('/api/v1/auth/profile/', data);
+    return put<User>('/accounts/profile/', data);
   },
 
   updateProfileDetails(data: ProfileDetailsUpdateRequest): Promise<User> {
-    return put<User>('/api/v1/auth/profile/update/', data);
+    return put<User>('/accounts/profile/update/', data);
   },
 
   changePassword(data: ChangePasswordRequest): Promise<{ message: string }> {
-    return post('/api/v1/auth/change-password/', data);
+    return post('/accounts/change-password/', data);
   },
 };

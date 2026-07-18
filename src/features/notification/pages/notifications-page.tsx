@@ -11,7 +11,7 @@ export default function NotificationsPage() {
   const markAllReadMutation = useMarkAllRead();
 
   const notifications = data?.results || [];
-  const unreadCount = unreadData?.count || 0;
+  const unreadCount = unreadData?.unread_count || 0;
 
   if (isLoading) return <FullPageLoader />;
 

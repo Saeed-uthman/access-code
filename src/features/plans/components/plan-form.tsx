@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Button, Input, Select, Card, CardHeader, CardTitle, CardContent } from '@/shared/components';
+import { Button, Input, Select, Textarea, Card, CardHeader, CardTitle, CardContent } from '@/shared/components';
 import type { Plan, PlanCreateRequest, PlanUpdateRequest } from '../types';
 
 const planSchema = z.object({
@@ -10,9 +10,10 @@ const planSchema = z.object({
     required_error: 'Plan type is required',
   }),
   cost: z.number().min(0, 'Cost must be a positive number'),
-  validity: z.enum(['daily', 'weekly', 'biweekly', 'monthly', 'yearly'], {
+  validity: z.enum(['hourly', 'daily', 'weekly', 'monthly', 'yearly'], {
     required_error: 'Validity is required',
   }),
+  description: z.string().optional(),
   is_active: z.boolean().default(true),
 });
 
@@ -31,17 +32,17 @@ const planTypeOptions = [
 ];
 
 const validityOptions = [
+  { value: 'hourly', label: 'Hourly' },
   { value: 'daily', label: 'Daily' },
   { value: 'weekly', label: 'Weekly' },
-  { value: 'biweekly', label: 'Biweekly' },
   { value: 'monthly', label: 'Monthly' },
   { value: 'yearly', label: 'Yearly' },
 ];
 
 const validityDays: Record<string, number> = {
+  hourly: 1,
   daily: 1,
   weekly: 7,
-  biweekly: 14,
   monthly: 30,
   yearly: 365,
 };
@@ -59,6 +60,7 @@ export function PlanForm({ plan, onSubmit, isLoading }: PlanFormProps) {
       plan_type: plan?.plan_type || 'individual',
       cost: plan?.cost || 0,
       validity: plan?.validity || 'monthly',
+      description: plan?.description || '',
       is_active: plan?.is_active ?? true,
     },
   });
@@ -68,6 +70,7 @@ export function PlanForm({ plan, onSubmit, isLoading }: PlanFormProps) {
   const onFormSubmit = (data: PlanFormValues) => {
     const submitData = {
       ...data,
+      description: data.description || '',
       validity_days: validityDays[data.validity],
     };
     onSubmit(submitData);
@@ -140,6 +143,18 @@ export function PlanForm({ plan, onSubmit, isLoading }: PlanFormProps) {
             <p className="text-sm text-gray-500">
               {validityDays[selectedValidity]} day{validityDays[selectedValidity] !== 1 ? 's' : ''}
             </p>
+          </div>
+
+          <div className="space-y-2">
+            <label htmlFor="description" className="text-sm font-medium text-gray-700">
+              Description
+            </label>
+            <Textarea
+              id="description"
+              placeholder="Optional description of the plan"
+              error={errors.description?.message}
+              {...register('description')}
+            />
           </div>
 
           <div className="flex items-center gap-3">

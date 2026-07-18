@@ -34,7 +34,15 @@ export interface VerifyOtpRequest {
 export interface VerifyOtpResponse {
   message: string;
   data: {
-    user: { id: string; email: string; username: string };
+    user: {
+      id: string;
+      email: string;
+      username: string;
+      full_name?: string;
+      phone_number?: string | null;
+      role?: string;
+      created_at?: string;
+    };
     token: string;
     refresh: string;
   };
